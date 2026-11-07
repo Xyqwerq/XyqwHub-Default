@@ -46,7 +46,6 @@ local ORDER_FILE = CONFIG_FOLDER .. "/Settings/order.json"
 local SESSION_FILE = CONFIG_FOLDER .. "/Session/last_jobid.txt"
 local XYQWHUB_URL = "https://raw.githubusercontent.com/Xyqwerq/XyqwHub-Default/main/main.lua"
 
-pcall(function()
     if not isfolder(CONFIG_FOLDER) then makefolder(CONFIG_FOLDER) end
     if not isfolder(CONFIG_FOLDER .. "/FavScripts") then makefolder(CONFIG_FOLDER .. "/FavScripts") end
     if not isfolder(CONFIG_FOLDER .. "/RctScripts") then makefolder(CONFIG_FOLDER .. "/RctScripts") end
@@ -54,6 +53,12 @@ pcall(function()
     if not isfolder(CONFIG_FOLDER .. "/AutoExecute") then makefolder(CONFIG_FOLDER .. "/AutoExecute") end
     if not isfolder(CONFIG_FOLDER .. "/Settings") then makefolder(CONFIG_FOLDER .. "/Settings") end
     if not isfolder(CONFIG_FOLDER .. "/Session") then makefolder(CONFIG_FOLDER .. "/Session") end
+end)
+-- Детектор кика
+pcall(function() writefile("XyqwHub/Logs/session.txt", "active") end)
+game:BindToClose(function()
+    -- Если игрок вышел сам, удаляем файл
+    pcall(function() delfile("XyqwHub/Logs/session.txt") end)
 end)
 
 local function SaveTable(path, tbl)
@@ -540,13 +545,19 @@ local function StartAntiKick()
         if type(hookfunction) ~= "function" then error("hookfunction not supported") end
         local LP = Players.LocalPlayer
         if not LP or not LP.Kick then error("LocalPlayer.Kick not found") end
+        
         antiKickOldKick = hookfunction(LP.Kick, function(self, ...)
             if getgenv().XyqwAntiKick then
                 AddAntiKickLog("Blocked Kick()")
                 ShowRobloxNotification("AntiKick: Blocked kick!", 3)
                 return nil
             end
-            return antiKickOldKick(self, ...)
+            -- ЗАЩИТА ОТ КРАША: если старая функция nil, просто игнорируем
+            if type(antiKickOldKick) == "function" then
+                return antiKickOldKick(self, ...)
+            else
+                return nil 
+            end
         end)
         antiKickActive = true
     end)
