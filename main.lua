@@ -80,11 +80,6 @@ ORDER = LoadTable(ORDER_FILE)
 pcall(function() 
     if writefile then writefile(CONFIG_FOLDER .. "/Logs/session.txt", "active") end 
 end)
-game:BindToClose(function()
-    pcall(function() 
-        if delfile then delfile(CONFIG_FOLDER .. "/Logs/session.txt") end 
-    end)
-end)
 
 -- ========== ТЕМЫ ==========
 local THEMES = {
