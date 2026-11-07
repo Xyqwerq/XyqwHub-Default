@@ -13,7 +13,7 @@ local function _s(...) return string.char(...) end
 local HUB_NAME = _s(88,121,113,119,72,117,98)
 local VERSION = "7.6.0 Default"
 local OWNER_IDS = {4396977722, 8527910367}
-local BETA_IDS = {9686718765, 3701387385}
+local BETA_IDS = {9686718765, 3701387385, 5856840755}
 
 local IS_RELAUNCH = (shared.XyqwHubRunning == true)
 if IS_RELAUNCH then
